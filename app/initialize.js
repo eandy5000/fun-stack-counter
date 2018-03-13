@@ -7,43 +7,51 @@ const { div, button, h3 } = tags;
 
 document.addEventListener("DOMContentLoaded", () => {
   // do your setup here
-  const initalModel = 0;
   const root = document.getElementById("root");
+  const intialState = 0;
+
   //view function
   function view(dispatch, model) {
     return div({ className: "ma3" }, [
-      h3({ className: "ml3" }, model),
-      button({ onclick: () => dispatch("plus") }, "+"),
-      button({ onclick: () => dispatch("minus"), className: "ml3" }, "-"),
-      button({ onclick: () => dispatch("reset"), className: "ml3" }, "reset")
+      h3({ className: "pa3 ml3" }, model),
+      button({ onclick: dispatch.bind(this, "plus"), className: "pa3" }, "+"),
+      button(
+        { onclick: dispatch.bind(this, "minus"), className: "pa3 ml2" },
+        "-"
+      ),
+      button(
+        { onclick: dispatch.bind(this, "reset"), className: "pa3 ml2" },
+        "reset"
+      )
     ]);
   }
+
   //update function
   function update(msg, model) {
     switch (msg) {
-      case "minus":
-        return model - 1;
       case "plus":
         return model + 1;
+      case "minus":
+        return model - 1;
       case "reset":
         return (model = 0);
       default:
         return model;
     }
   }
-  //impure app function
-  function app(initalModel, update, view, node) {
-    let model = initalModel;
-    let currentView = view(dispatch, model);
-    node.appendChild(currentView);
 
+  //impure app function
+  function app(model, update, view, node) {
+    let currentModel = model;
+    let currentView = view(dispatch, currentModel);
+    node.appendChild(currentView);
     function dispatch(msg) {
-      model = update(msg, model);
-      const updatedView = view(dispatch, model);
+      currentModel = update(msg, currentModel);
+      const updatedView = view(dispatch, currentModel);
       node.replaceChild(updatedView, currentView);
       currentView = updatedView;
     }
   }
 
-  app(initalModel, update, view, root);
+  app(intialState, update, view, root);
 });
